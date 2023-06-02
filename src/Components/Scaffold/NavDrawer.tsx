@@ -4,105 +4,94 @@ import Toolbar from "@mui/material/Toolbar";
 import List from "@mui/material/List";
 import Typography from "@mui/material/Typography";
 import ListItem from "@mui/material/ListItem";
-import { useTheme, Theme, ThemeProvider } from '@mui/material/styles';
-import {
-  BrowserRouter,
-  Link,
-  Routes,
-  Route,
-} from "react-router-dom";
+import { useTheme, Theme, ThemeProvider } from "@mui/material/styles";
+import { BrowserRouter, Link, Routes, Route } from "react-router-dom";
 import ContactCardGrid from "../Grid/ContactCardGrid";
 import ContactForm from "../Form/ContactForm";
 import ContactTable from "../Table/ContactTable";
 import ContactDataGrid from "../DataGrid/ContactDataGrid";
 import { BeautifulTheme } from "../../Theme/BeautifulTheme";
 
-type ThemeWidth = Theme
-  & { drawerWidth: number | string }
+type ThemeWidth = Theme & { drawerWidth: number | string };
+
+const list = [
+  { text: "Contact Form", route: "/form" },
+  { text: "Contact Card Grid", route: "/grid" },
+  { text: "Contact Table", route: "/table" },
+  { text: "Contact Data Grid", route: "/datagrid" },
+];
 
 const drawerWidth = 240;
-const transitionDuration = 1000;
-
-const styles = (theme: ThemeWidth) => {
+const themeStyles = (theme: Theme) => {
   return {
     appBar: {
-      zIndex: theme.zIndex.drawer + 1
+      zIndex: theme.zIndex.drawer + 1,
     },
-    drawer: {
-      width: drawerWidth,
-      "& .MuiBackdrop-root": {
-        display: "none"
-      }
-    },
-    drawerPaper: {
-      width: drawerWidth,
-      backgroundColor: "rgba(120, 120, 120, 0.2)"
-    },
-    content: {
-      padding: 3,
-      minWidth: drawerWidth,
-      marginLeft: 0
-    },
-    contentShift: {
-      minWidth: drawerWidth,
-      marginLeft: drawerWidth
-    }
-  }
-}
+  };
+};
 
+const simpleStyles = {
+  drawer: {
+    width: drawerWidth,
+    "& .MuiBackdrop-root": {
+      display: "none",
+    },
+  },
+  drawerPaper: {
+    width: drawerWidth,
+    backgroundColor: "rgba(120,120,120,0.2)",
+  },
+  content: {
+    marginLeft: drawerWidth + 10,
+    padding: 3,
+    marginTop: 10,
+  },
+};
 export default function NavDrawer() {
   const theme = useTheme() as ThemeWidth;
-  theme.drawerWidth = drawerWidth
+  theme.drawerWidth = drawerWidth;
   return (
-    <>
-      <BrowserRouter>
-        <div>
-          <AppBar position="fixed" sx={styles(theme).appBar}>
-            <Toolbar>
-              <Typography variant="h6" noWrap>
-                Expert Material-UI Styling
-              </Typography>
-            </Toolbar>
-          </AppBar>
-          <Drawer
-            disableEnforceFocus
-            sx={styles(theme).drawer}
-            variant="temporary"
-            open={true}
-            transitionDuration={{
-              enter: transitionDuration,
-              exit: transitionDuration
-            }}
-
-            PaperProps={{ elevation: 9, sx: styles(theme).drawerPaper }}
-          >
-            <Toolbar />
-            <div>
-              <List>
-                {[{ text: "Contact Form", route: '/form' }, { text: "Card Grid", route: "/grid" }, { text: "Table", route: "/table" }, { text: "Data Grid", route: "/datagrid" }].map((nav, index) => (
-                  <ListItem key={nav.text} sx={{ borderBottom: '1px solid black', borderBottomColor: 'primary.main' }}>
-                    <Link to={nav.route}>{nav.text}</Link>
-                  </ListItem>
-                ))}
-              </List>
-            </div>
-          </Drawer>
-          <main
-            style={{ ...styles(theme).content, ...styles(theme).contentShift }}
-          >
-            <Toolbar />
-            <ThemeProvider theme={BeautifulTheme}>
-              <Routes>
-                <Route path={"/"} element={<ContactForm />} />
-                <Route path={"/form"} element={<ContactForm />} />
-                <Route path={"/grid"} element={<ContactCardGrid />} />
-                <Route path={"/table"} element={<ContactTable />} />
-                <Route path={"/datagrid"} element={<ContactDataGrid />} />
-              </Routes>
-            </ThemeProvider>
-          </main>
-        </div>
-      </BrowserRouter>
-    </>
+    <BrowserRouter>
+      <div>
+        <AppBar position="fixed" sx={themeStyles(theme).appBar}>
+          <Toolbar>
+            <Typography variant="h6" noWrap>
+              Advanced mui
+            </Typography>
+          </Toolbar>
+        </AppBar>
+        <Drawer
+          disableEnforceFocus
+          variant="temporary"
+          open
+          sx={simpleStyles.drawer}
+          PaperProps={{
+            sx: simpleStyles.drawerPaper,
+            elevation: 9,
+          }}
+        >
+          <Toolbar />
+          <List>
+            {list.map((nav) => (
+              <ListItem key={nav.text}>
+                <Link to={nav.route}>{nav.text}</Link>
+              </ListItem>
+            ))}
+          </List>
+        </Drawer>
+        <main style={simpleStyles.content}>
+          <Toolbar />
+          <ThemeProvider theme={BeautifulTheme}>
+            <Routes>
+              <Route path="/" element={<ContactForm />} />
+              <Route path="/form" element={<ContactForm />} />
+              <Route path="/grid" element={<ContactCardGrid />} />
+              <Route path="/table" element={<ContactTable />} />
+              <Route path="/datagrid" element={<ContactDataGrid />} />
+            </Routes>
+          </ThemeProvider>
+        </main>
+      </div>
+    </BrowserRouter>
   );
 }

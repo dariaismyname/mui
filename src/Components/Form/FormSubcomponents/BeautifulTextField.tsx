@@ -1,7 +1,7 @@
-import { TextField } from "@mui/material";
+import { TextField, TextFieldProps } from "@mui/material";
 import { minWidth } from "../ContactForm";
 
-export default function BeautifulTextField(props: any) {
+export default function BeautifulTextField(props: TextFieldProps) {
   return (
     <TextField
       {...props}
@@ -10,8 +10,20 @@ export default function BeautifulTextField(props: any) {
       label="Name"
       variant="outlined"
       sx={{
-        minWidth: minWidth
+        minWidth: minWidth,
+        marginRight: 2,
+        marginBottom: { xs: 2, md: 0 },
+        "& .MuiOutlinedInput-root.Mui-focused": {
+          "& > fieldset": {
+            borderColor: "primary.dark",
+          },
+        },
+        "& .MuiOutlinedInput-root:hover": {
+          "& > fieldset.MuiOutlinedInput-notchedOutline": {
+            borderColor: "orange",
+          },
+        },
       }}
     />
-  )
+  );
 }

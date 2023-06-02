@@ -1,28 +1,50 @@
 import { Autocomplete, TextField } from "@mui/material";
 import { minWidth } from "../ContactForm";
 
-export default function BeautifulAutocomplete(props: any) {
+const roles = ["Software Dev", "Architect", "Designer", "Business Analyst"];
+
+export default function BeautifulAutocomplete(props: {
+  value: string;
+  onInputChange: (
+    event: React.SyntheticEvent<Element, Event>,
+    value: string
+  ) => void;
+}) {
   return (
     <Autocomplete
       {...props}
+      options={roles}
       sx={{ minWidth: minWidth }}
-      getOptionLabel={(roleOption) => `${roleOption}`}
       isOptionEqualToValue={(option, value) => option === value || value === ""}
       renderInput={(params) => {
         return (
           <TextField
             name="role"
+            sx={{
+              "& .MuiOutlinedInput-root.Mui-focused": {
+                color: "primary.dark",
+              },
+            }}
             {...params}
           />
         );
       }}
-      renderOption={(props, option, state) => {
-        return (
-          <li {...props}>
-            {`${option}`}
-          </li>
-        ); //display value
+      getOptionLabel={(roleOption) => `${roleOption}`}
+      renderOption={(props, option) => {
+        return <li {...props}>{`${option}`}</li>;
       }}
+      ListboxProps={{
+        //@ts-ignore
+        sx: {
+          height: 100,
+          color: "primary.dark",
+          "& li.MuiAutocomplete-option:hover": { backgroundColor: "green" },
+          "& li.MuiAutocomplete-option[aria-selected='true'].Mui-focused": {
+            backgroundColor: "primary.light",
+          },
+        },
+      }}
+      onChange={() => {}}
     />
-  )
+  );
 }

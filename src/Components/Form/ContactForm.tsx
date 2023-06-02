@@ -1,21 +1,59 @@
 import { useState } from "react";
-import { Alert, AlertTitle, Button, Dialog, FormControl, FormGroup, ListItemText, MenuItem, Paper, SelectChangeEvent, Stack, TextField } from "@mui/material";
+import {
+  Alert,
+  AlertTitle,
+  Checkbox,
+  Dialog,
+  SelectChangeEvent,
+  Button,
+  FormGroup,
+  Input,
+  FormControl,
+  ListItemText,
+  MenuItem,
+  Paper,
+  Stack,
+} from "@mui/material";
 import { contactData, FormValues } from "../../Data/ContactData";
+import BeautifulTextField from "./FormSubcomponents/BeautifulTextField";
 import BeautifulAutocomplete from "./FormSubcomponents/BeautifulAutocomplete";
-import BeautifulDesktopDatePicker from "./FormSubcomponents/BeautifulDesktopDatePicker";
 import BeautifulSelect from "./FormSubcomponents/BeautifulSelect";
+import BeautifulDesktopDatePicker from "./FormSubcomponents/BeautifulDesktopDatePicker";
 import BeautifulRadios from "./FormSubcomponents/BeautifulRadios";
+import { StyledFormGroup } from "./FormSubcomponents/StyledFormGroup";
+import { useTheme } from "@mui/material/styles";
 
 export const minWidth = 300;
+export const defaultPreference = "Work From Home";
 const skills = ["React", "Angular", "Python", "NodeJS", "Machine Learning"];
-const roles = ["Software Dev", "Architect", "Designer", "Business Analyst"];
-const defaultPreference = "Work From Home";
+const today = new Date();
+
+const paperInputsStyle = {
+  "& .MuiOutlinedInput-root": {
+    "& > fieldset": { border: "1px solid", borderColor: "primary.main" },
+    "&:hover": {
+      "& > fieldset": { borderColor: "primary.light" },
+    },
+  },
+  "& .MuiFormLabel-root": {
+    color: "primary.dark",
+  },
+};
 
 export default function ContactForm() {
-  const today = new Date();
+  const theme = useTheme();
   const getDefaultFormValues = () => {
-    return { id: contactData.length + 1, name: '', role: '', skills: [], startDate: `${today.getMonth() + 1}/${today.getDate()}/${today.getFullYear()}`, preference: defaultPreference };
-  }
+    return {
+      id: contactData.length + 1,
+      name: "",
+      role: "",
+      skills: ["React"],
+      startDate: `${
+        today.getMonth() + 1
+      }/${today.getDate()}/${today.getFullYear()}`,
+      preference: defaultPreference,
+    };
+  };
 
   const [formValues, setFormValues] = useState<FormValues>(
     getDefaultFormValues()
@@ -34,141 +72,152 @@ export default function ContactForm() {
 
   const handleAutoCompleteChange = (
     event: React.SyntheticEvent<Element, Event>,
-    value: string | null
+    value: string
   ) => {
     setFormValues({
       ...formValues,
-      role: value || ""
+      role: value || "",
     });
   };
 
-  const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>, value: string) => {
-    const { name } = event.target;
-    setFormValues({
-      ...formValues,
-      [name]: value
-    });
-  };
-
-  const handleSelectChange = (event: SelectChangeEvent<string[]>, child: React.ReactNode) => {
+  const handleSelectChange = (
+    event: SelectChangeEvent<string[]>,
+    child: React.ReactNode
+  ) => {
     const {
-      target: { value }
+      target: { value },
     } = event;
     setFormValues({
       ...formValues,
-      skills: typeof value === 'string' ? value.split(',') : value
+      skills: typeof value === "string" ? value.split(", ") : value,
     });
   };
 
-  const handleDatePickerChange = (
-    value: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | null,
-    keyboardInputValue?: string | undefined
-  ) => {
-    const startDate = value as unknown as { month: () => string, date: () => string, year: () => string };
+  const handleDatePickerChange = (value: string | null | undefined) => {
+    console.log(value);
+    const startDate = value as unknown as {
+      month: () => string;
+      date: () => string;
+      year: () => string;
+    };
     setFormValues({
       ...formValues,
-      startDate: `${startDate.month() + 1}/${startDate.date()}/${startDate.year()}`,
+      startDate: `${
+        startDate.month() + 1
+      }/${startDate.date()}/${startDate.year()}`,
+    });
+  };
+
+  const handleRadioChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    value: string
+  ) => {
+    const { name } = event.target;
+    setFormValues({
+      ...formValues,
+      [name]: value,
     });
   };
 
   const handleSubmit = () => {
     contactData.push(formValues);
     setAlertOpen(true);
+    console.log(contactData);
     clearValues();
-  }
+  };
 
   const handleClearClick = () => {
     clearValues();
-  }
+  };
 
   const clearValues = () => {
     setFormValues({ ...getDefaultFormValues() });
-  }
+    console.log(formValues);
+  };
 
   const handleAlertClick = () => {
-    setAlertOpen(!alertOpen);
-  }
+    setAlertOpen(false);
+  };
 
-  return <>
-    <Paper>
-      <form>
-        <FormControl >
-          <FormGroup 
-            row 
-            sx={{
-              padding: 2,
-              justifyContent: 'space-between'
-            }}
-          >
-            <TextField
-              id="name"
-              name="name"
-              label="Name"
-              variant="outlined"
-              sx={{ minWidth: minWidth, marginBottom: { xs: 2, md: 0 }, marginRight: { md: 2 } }}
-              onChange={handleTextFieldChange}
+  return (
+    <>
+      <Paper
+        sx={{
+          ...paperInputsStyle,
+          margin: { xs: 1, sm: 2 },
+          zIndex: theme.zIndex.appBar + 1,
+          "&:hover": { backgroundColor: "rgba(0,0,0,0.1)" },
+          backgroundColor: "grid.dark",
+          //"& button.MuiButton-text": { backgroundColor: "primary.light" }
+        }}
+      >
+        <form>
+          <StyledFormGroup row>
+            <BeautifulTextField
               value={formValues.name}
+              onChange={handleTextFieldChange}
             />
-
             <BeautifulAutocomplete
-              options={roles}
-              value={formValues.role || ''}
+              value={formValues.role || ""}
               onInputChange={handleAutoCompleteChange}
             />
-          </FormGroup>
-          <FormGroup 
-            row 
-            sx={{
-              padding: 2,
-              justifyContent: 'space-between'
-            }}
-          >
+          </StyledFormGroup>
+          <StyledFormGroup row>
             <BeautifulSelect
-              onChange={handleSelectChange}
               value={formValues.skills || ""}
-              multiple
+              onChange={handleSelectChange}
             >
               {skills.map((skillName) => {
                 return (
                   <MenuItem value={skillName} key={skillName}>
+                    <Checkbox
+                      checked={formValues.skills?.includes(skillName)}
+                    />
                     <ListItemText primary={skillName} />
                   </MenuItem>
-                )
+                );
               })}
             </BeautifulSelect>
+
             <BeautifulDesktopDatePicker
               value={formValues.startDate}
               onChange={handleDatePickerChange}
-
             />
-          </FormGroup>
-          <FormGroup 
-            row 
-            sx={{
-              padding: 2,
-              justifyContent: 'space-between'
-            }}
-          >
+          </StyledFormGroup>
+          <StyledFormGroup row>
             <BeautifulRadios
               preference={formValues.preference}
-              defaultPreference={defaultPreference}
               handleRadioChange={handleRadioChange}
             />
-            <Stack >
-              <Button onClick={handleSubmit}>Save</Button>
-              <Button onClick={handleClearClick}>Clear</Button>
+            <Stack
+              justifyContent="space-around"
+              alignItems="center"
+              sx={{ minWidth: minWidth }}
+            >
+              <Button
+                variant="contained"
+                sx={{ height: 56, width: 100 }}
+                onClick={handleSubmit}
+              >
+                Submit
+              </Button>
+              <Button
+                variant="beautiful"
+                sx={{ height: 56, width: 100 }}
+                onClick={handleClearClick}
+              >
+                Clear
+              </Button>
             </Stack>
-          </FormGroup>
-        </FormControl>
-      </form>
-    </Paper>
-    <Dialog open={alertOpen} onClose={handleAlertClick}>
-      <Alert
-        onClose={() => setAlertOpen(false)}
-      >
-        <AlertTitle>Success!</AlertTitle>
-        Form Submitted.
-      </Alert>
-    </Dialog>
-  </>
+          </StyledFormGroup>
+        </form>
+      </Paper>
+      <Dialog open={alertOpen} onClose={handleAlertClick}>
+        <Alert onClose={handleAlertClick}>
+          <AlertTitle>Success!</AlertTitle>
+          Form Submitted
+        </Alert>
+      </Dialog>
+    </>
+  );
 }
